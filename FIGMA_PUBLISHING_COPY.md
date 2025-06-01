@@ -2,7 +2,7 @@
 
 ## 🏷️ **Tagline**
 ```
-Connect Figma to AI assistants for automated design
+MCP Server For Figma
 ```
 *Alternative options:*
 - "AI-powered design automation via MCP protocol"

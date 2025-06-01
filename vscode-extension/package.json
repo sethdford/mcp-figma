@@ -1,0 +1,182 @@
+{
+  "name": "mcp-figma-extension",
+  "displayName": "MCP Figma Extension",
+  "description": "Visual Studio Code extension for seamless MCP Figma integration with AI assistants",
+  "version": "1.0.0",
+  "publisher": "SethFord",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other",
+    "Extension Packs"
+  ],
+  "keywords": [
+    "figma",
+    "mcp",
+    "ai",
+    "design",
+    "automation",
+    "cursor",
+    "copilot",
+    "windsurf",
+    "claude"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "icon": "resources/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sethdford/mcp-figma.git"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "mcpFigma.setupMcpServer",
+        "title": "Setup MCP Server",
+        "category": "MCP Figma"
+      },
+      {
+        "command": "mcpFigma.startWebSocketServer",
+        "title": "Start WebSocket Server",
+        "category": "MCP Figma"
+      },
+      {
+        "command": "mcpFigma.stopWebSocketServer",
+        "title": "Stop WebSocket Server",
+        "category": "MCP Figma"
+      },
+      {
+        "command": "mcpFigma.restartWebSocketServer",
+        "title": "Restart WebSocket Server",
+        "category": "MCP Figma"
+      },
+      {
+        "command": "mcpFigma.openFigmaPlugin",
+        "title": "Open Figma Plugin Instructions",
+        "category": "MCP Figma"
+      },
+      {
+        "command": "mcpFigma.showStatus",
+        "title": "Show Connection Status",
+        "category": "MCP Figma"
+      },
+      {
+        "command": "mcpFigma.openDocumentation",
+        "title": "Open Documentation",
+        "category": "MCP Figma"
+      },
+      {
+        "command": "mcpFigma.testConnection",
+        "title": "Test MCP Connection",
+        "category": "MCP Figma"
+      }
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "mcpFigmaView",
+          "name": "MCP Figma",
+          "when": "mcpFigma.enabled"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "mcpFigmaView",
+        "contents": "Welcome to MCP Figma Extension!\n\n[Setup MCP Server](command:mcpFigma.setupMcpServer)\n[Start WebSocket Server](command:mcpFigma.startWebSocketServer)\n[Open Documentation](command:mcpFigma.openDocumentation)\n\nGet started by setting up the MCP server configuration for your AI assistant."
+      }
+    ],
+    "configuration": {
+      "title": "MCP Figma",
+      "properties": {
+        "mcpFigma.websocketPort": {
+          "type": "number",
+          "default": 3055,
+          "description": "Port for the WebSocket server"
+        },
+        "mcpFigma.autoStartWebSocket": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically start WebSocket server on extension activation"
+        },
+        "mcpFigma.enableStatusBar": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show status bar item"
+        },
+        "mcpFigma.aiAssistant": {
+          "type": "string",
+          "enum": [
+            "cursor",
+            "github-copilot",
+            "windsurf",
+            "claude-desktop",
+            "manual"
+          ],
+          "default": "cursor",
+          "description": "AI assistant to configure MCP for"
+        }
+      }
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "mcpFigma.startWebSocketServer",
+          "when": "view == mcpFigmaView",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "mcpFigma.setupMcpServer",
+          "when": "true"
+        },
+        {
+          "command": "mcpFigma.startWebSocketServer",
+          "when": "true"
+        },
+        {
+          "command": "mcpFigma.stopWebSocketServer",
+          "when": "mcpFigma.webSocketRunning"
+        },
+        {
+          "command": "mcpFigma.restartWebSocketServer",
+          "when": "mcpFigma.webSocketRunning"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.57",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "@vscode/test-electron": "^2.3.8",
+    "eslint": "^8.56.0",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@types/vscode": "^1.90.0",
+    "node-fetch": "^3.3.2"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "author": "Seth Ford <seth@sethford.com>",
+  "license": "MIT",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/sethdford/mcp-figma/issues"
+  },
+  "homepage": "https://github.com/sethdford/mcp-figma#readme"
+}
