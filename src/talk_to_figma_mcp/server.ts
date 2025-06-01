@@ -8,6 +8,11 @@ import { v4 as uuidv4 } from "uuid";
 import { fork, ChildProcess } from "child_process"; // Added import
 import path from "path"; // Added import
 import fs from "fs"; // Added import
+import { fileURLToPath } from "url";
+
+// ES module equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Define TypeScript interfaces for Figma responses
 interface FigmaResponse {
@@ -3041,7 +3046,7 @@ async function main() {
 // Function to start the WebSocket server
 async function startWebSocketServer(): Promise<void> {
   return new Promise((resolve, reject) => {
-    const socketScriptPath = path.join(__dirname, "socket.js"); // MODIFIED LINE for bundling
+    const socketScriptPath = path.join(__dirname, "..", "socket.js"); // MODIFIED LINE for bundling
     logger.info(`Looking for WebSocket server script at: ${socketScriptPath}`);
 
     if (!fs.existsSync(socketScriptPath)) {

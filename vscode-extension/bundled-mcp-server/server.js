@@ -9,6 +9,9 @@ import { v4 as uuidv4 } from "uuid";
 import { fork } from "child_process";
 import path from "path";
 import fs from "fs";
+import { fileURLToPath } from "url";
+var __filename = fileURLToPath(import.meta.url);
+var __dirname = path.dirname(__filename);
 var logger = {
   info: (message) => process.stderr.write(`[INFO] ${message}\\n`),
   debug: (message) => process.stderr.write(`[DEBUG] ${message}\\n`),
@@ -2330,7 +2333,7 @@ async function main() {
 }
 async function startWebSocketServer() {
   return new Promise((resolve, reject) => {
-    const socketScriptPath = path.join(__dirname, "socket.js");
+    const socketScriptPath = path.join(__dirname, "..", "socket.js");
     logger.info(`Looking for WebSocket server script at: ${socketScriptPath}`);
     if (!fs.existsSync(socketScriptPath)) {
       const errorMsg = `Socket script not found at ${socketScriptPath}. Ensure it is bundled with the extension (e.g., in 'bundled-mcp-server') or run 'npm run build' in the project.`;
