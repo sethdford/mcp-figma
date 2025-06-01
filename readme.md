@@ -263,9 +263,15 @@ npm run socket
 
 ### Figma Plugin
 
+**Option 1: From Figma Community (Recommended)**
+1. Go to [MCP Figma Plugin on Figma Community](https://www.figma.com/community/plugin/mcp-figma-plugin) (coming soon)
+2. Click "Install" 
+3. The plugin will be available in your Figma plugins menu
+
+**Option 2: Manual Installation (Development)**
 1. In Figma, go to Plugins > Development > New Plugin
 2. Choose "Link existing plugin"
-3. Select the `src/cursor_mcp_plugin/manifest.json` file
+3. Select the `src/mcp_plugin/manifest.json` file
 4. The plugin should now be available in your Figma development plugins
 
 ## Advanced Configuration

@@ -12,6 +12,9 @@
     "README.md"
   ],
   "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "start": "node dist/talk_to_figma_mcp/server.js",
     "socket": "node dist/socket.js",
@@ -21,6 +24,7 @@
     "setup:windsurf": "./scripts/setup-windsurf.sh",
     "setup:github-copilot": "./scripts/setup-github-copilot.sh",
     "setup:claude-desktop": "./scripts/setup-claude-desktop.sh",
+    "publish:figma": "./scripts/publish-figma-plugin.sh",
     "build": "tsup",
     "build:watch": "tsup --watch",
     "dev": "npm run build:watch",
