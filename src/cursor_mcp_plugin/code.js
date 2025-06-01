@@ -1,5 +1,5 @@
-// This is the main code file for the Cursor MCP Figma plugin
-// It handles Figma API commands
+// This is the main code file for the MCP Figma plugin
+// It handles Figma API commands for all AI assistants (Cursor, GitHub Copilot, Windsurf, Claude Desktop, etc.)
 
 // Plugin state
 const state = {

@@ -9,6 +9,6 @@ startCommand:
     # A JS function that produces the CLI command based on the given config to start the MCP on stdio.
     |-
     (config) => ({
-      command: 'bunx',
-      args: ['cursor-talk-to-figma-mcp']
+      command: 'npx',
+      args: ['mcp-figma']
     })

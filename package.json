@@ -1,11 +1,11 @@
 {
-  "name": "cursor-talk-to-figma-mcp",
-  "description": "Cursor Talk to Figma MCP",
-  "version": "0.2.1",
-  "module": "dist/server.js",
-  "main": "dist/server.js",
+  "name": "mcp-figma",
+  "description": "AI-powered Figma MCP server for Cursor, GitHub Copilot, Windsurf and other AI assistants",
+  "version": "1.0.0",
+  "module": "dist/talk_to_figma_mcp/server.js",
+  "main": "dist/talk_to_figma_mcp/server.js",
   "bin": {
-    "cursor-talk-to-figma-mcp": "dist/server.js"
+    "mcp-figma": "dist/talk_to_figma_mcp/server.js"
   },
   "files": [
     "dist",
@@ -13,17 +13,24 @@
   ],
   "type": "module",
   "scripts": {
-    "start": "bun run dist/server.js",
-    "socket": "bun run src/socket.ts",
+    "start": "node dist/talk_to_figma_mcp/server.js",
+    "socket": "node dist/socket.js",
+    "socket:dev": "node --loader ts-node/esm src/socket.ts",
     "setup": "./scripts/setup.sh",
+    "setup:cursor": "./scripts/setup-cursor.sh",
+    "setup:windsurf": "./scripts/setup-windsurf.sh",
+    "setup:github-copilot": "./scripts/setup-github-copilot.sh",
+    "setup:claude-desktop": "./scripts/setup-claude-desktop.sh",
     "build": "tsup",
     "build:watch": "tsup --watch",
-    "dev": "bun run build:watch",
-    "pub:release": "bun run build && npm publish"
+    "dev": "npm run build:watch",
+    "pub:release": "npm run build && npm publish"
   },
   "devDependencies": {
-    "@types/bun": "latest",
-    "bun-types": "^1.2.5",
+    "@types/node": "^20.0.0",
+    "@types/ws": "^8.5.0",
+    "@types/uuid": "^9.0.0",
+    "ts-node": "^10.9.0",
     "tsup": "^8.4.0",
     "typescript": "^5.0.0"
   },
@@ -32,5 +39,21 @@
     "uuid": "latest",
     "ws": "latest",
     "zod": "latest"
-  }
+  },
+  "keywords": [
+    "mcp",
+    "figma",
+    "ai",
+    "cursor",
+    "copilot",
+    "windsurf",
+    "claude",
+    "model-context-protocol"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sethford/mcp-figma.git"
+  },
+  "author": "Seth Ford <seth@sethford.com>",
+  "license": "MIT"
 }

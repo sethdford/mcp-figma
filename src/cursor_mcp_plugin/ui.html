@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Cursor MCP Plugin</title>
+    <title>MCP Figma Plugin</title>
     <style>
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
@@ -179,8 +179,8 @@
           />
         </div>
         <div class="header-text">
-          <h1>Cursor Talk To Figma Plugin</h1>
-          <p>Connect Figma to Cursor AI using MCP</p>
+          <h1>MCP Figma Plugin</h1>
+          <p>Connect Figma to AI assistants using MCP</p>
         </div>
       </div>
 
@@ -206,7 +206,7 @@
         </div>
 
         <div id="connection-status" class="status disconnected">
-          Not connected to Cursor MCP server
+          Not connected to AI assistant MCP server
         </div>
 
         <div class="section">
@@ -231,10 +231,9 @@
 
       <div id="content-about" class="tab-content">
         <div class="section">
-          <h2>About Cursor Talk To Figma Plugin</h2>
+          <h2>About MCP Figma Plugin</h2>
           <p>
-            This plugin allows Cursor AI to communicate with Figma, enabling
-            AI-assisted design operations. created by
+            This plugin allows AI assistants (Cursor, GitHub Copilot, Windsurf, Claude Desktop, and more) to communicate with Figma, enabling AI-assisted design operations. Created by
             <a
               class="link"
               onclick="window.open(`https://github.com/sonnylazuardi`, '_blank')"
@@ -243,11 +242,21 @@
           </p>
           <p>Version: 1.0.0</p>
 
+          <h2>Compatible AI Assistants</h2>
+          <ul>
+            <li>✅ Cursor (Agent mode)</li>
+            <li>✅ GitHub Copilot (VS Code, JetBrains, Eclipse, Xcode)</li>
+            <li>✅ Windsurf (Cascade agent)</li>
+            <li>✅ Claude Desktop</li>
+            <li>✅ Zed, Neovim, and other MCP-compatible tools</li>
+          </ul>
+
           <h2>How to Use</h2>
           <ol>
-            <li>Make sure the MCP server is running in Cursor</li>
+            <li>Make sure the MCP Figma server is running in your AI assistant</li>
             <li>Connect to the server using the port number (default: 3055)</li>
-            <li>Once connected, you can interact with Figma through Cursor</li>
+            <li>Once connected, you can interact with Figma through your AI assistant</li>
+            <li>Ask your AI assistant to join a Figma channel and start designing!</li>
           </ol>
         </div>
       </div>
@@ -286,8 +295,8 @@
         connectionStatus.innerHTML =
           message ||
           (isConnected
-            ? "Connected to Cursor MCP server"
-            : "Not connected to Cursor MCP server");
+            ? "Connected to AI assistant MCP server"
+            : "Not connected to AI assistant MCP server");
         connectionStatus.className = `status ${
           isConnected ? "connected" : "disconnected"
         }`;
@@ -343,7 +352,7 @@
                     {
                       pluginMessage: {
                         type: "notify",
-                        message: `Connected to Cursor MCP server on port ${port} in channel: ${channelName}`,
+                        message: `Connected to AI assistant MCP server on port ${port} in channel: ${channelName}`,
                       },
                     },
                     "*"
