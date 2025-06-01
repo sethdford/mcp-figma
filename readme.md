@@ -19,7 +19,7 @@ https://github.com/user-attachments/assets/129a14d2-ed73-470f-9a4c-2240b2a4885c
 ## Project Structure
 
 - `src/talk_to_figma_mcp/` - TypeScript MCP server for Figma integration
-- `src/cursor_mcp_plugin/` - Figma plugin for communicating with AI assistants (Cursor, GitHub Copilot, Windsurf, Claude Desktop, etc.)
+- `src/mcp_plugin/` - Figma plugin for communicating with AI assistants (Cursor, GitHub Copilot, Windsurf, Claude Desktop, etc.)
 - `src/socket.ts` - WebSocket server that facilitates communication between the MCP server and Figma plugin (started automatically by the MCP server)
 
 ## Quick Setup Guide
@@ -231,13 +231,24 @@ Thanks to [@dusskapark](https://github.com/dusskapark) for contributing the bulk
 Another contribution from [@dusskapark](https://github.com/dusskapark)
 Propagate component instance overrides from a source instance to multiple target instances with a single command. This feature dramatically reduces repetitive design work when working with component instances that need similar customizations. Check out our [demo video](https://youtu.be/uvuT8LByroI).
 
-## Manual Setup and Installation
+## Development Setup
 
-### MCP Server: Integration with AI Assistants
+### Building from Source
 
-For manual configuration or if your AI assistant requires it, you can point directly to the server script. After running `npm run setup` (which includes `npm run build`), the server script will be at `dist/talk_to_figma_mcp/server.js` within this project's directory.
+If you want to build from source or contribute to the project:
 
-Example for Cursor's `mcp.json`:
+1. **Clone the repository:**
+```bash
+git clone https://github.com/your-repo/ai-figma-mcp.git
+cd ai-figma-mcp
+```
+
+2. **Install dependencies and build:**
+```bash
+npm run setup
+```
+
+3. **For local development, you can point directly to the built server:**
 ```json
 {
   "mcpServers": {
@@ -248,7 +259,7 @@ Example for Cursor's `mcp.json`:
   }
 }
 ```
-Replace `/path/to/your/project/` with the actual absolute path to this cloned repository. The MCP server will automatically start the WebSocket server.
+Replace `/path/to/your/project/` with the actual absolute path to this cloned repository.
 
 ### Figma Plugin
 
@@ -260,7 +271,7 @@ Replace `/path/to/your/project/` with the actual absolute path to this cloned re
 **Option 2: Manual Installation (Development)**
 1. In Figma, go to Plugins > Development > New Plugin
 2. Choose "Link existing plugin"
-3. Select the `src/cursor_mcp_plugin/manifest.json` file from this project.
+3. Select the `src/mcp_plugin/manifest.json` file from this project.
 4. The plugin should now be available in your Figma development plugins.
 
 ## Usage
@@ -459,9 +470,9 @@ The MCP server includes several helper prompts to guide you through complex desi
 ### Building the Figma Plugin
 
 1. Navigate to the Figma plugin directory:
-   \`\`\`
-   cd src/cursor_mcp_plugin
-   \`\`\`
+   ```
+   cd src/mcp_plugin
+   ```
 2. Edit `code.js` and `ui.html`.
 
 ### Building the Project

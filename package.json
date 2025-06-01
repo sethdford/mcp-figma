@@ -1,7 +1,7 @@
 {
   "name": "ai-figma-mcp",
   "description": "AI-powered Figma MCP server for Cursor, GitHub Copilot, Windsurf and other AI assistants",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "module": "dist/talk_to_figma_mcp/server.js",
   "main": "dist/talk_to_figma_mcp/server.js",
   "bin": {
@@ -30,23 +30,14 @@
     "dev": "npx tsup --watch",
     "pub:release": "npm run build && npm publish",
     "test": "npm run build",
-    "vscode:prepublish": "npm run compile-extension",
-    "compile-extension": "tsc -p ./vscode-extension/tsconfig.json",
-    "watch-extension": "tsc -watch -p ./vscode-extension/tsconfig.json",
-    "pretest": "npm run compile-extension && npm run lint",
-    "lint": "eslint vscode-extension/src --ext ts",
-    "test-extension": "node ./vscode-extension/out/test/runTest.js",
-    "package-extension": "vsce package"
+    "lint": "eslint src --ext ts"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "@types/ws": "^8.5.10",
     "@types/uuid": "^9.0.7",
     "ts-node": "^10.9.1",
-    "typescript": "^5.3.3",
-    "@types/vscode": "^1.85.0",
-    "@vscode/test-electron": "^2.3.8",
-    "vsce": "^2.15.0"
+        "typescript": "^5.3.3"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "latest",

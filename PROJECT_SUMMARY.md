@@ -77,11 +77,7 @@ mcp-figma/
 │  ├─ talk_to_figma_mcp/     # MCP server (Node.js)
 │  ├─ mcp_plugin/            # Figma plugin
 │  └─ socket.ts              # WebSocket server (Node.js)
-├─ vscode-extension/         # 🆕 VS Code extension
-│  ├─ src/extension.ts       # Main extension logic
-│  ├─ resources/icon.png     # Professional icon
-│  ├─ package.json           # Extension manifest
-│  └─ mcp-figma-extension-1.0.0.vsix  # 📦 Ready to install
+
 ├─ scripts/                  # Setup scripts (Node.js)
 └─ docs/                     # Comprehensive documentation
 ```
@@ -108,7 +104,7 @@ wss.on('connection', (ws) => { /* enhanced handlers */ });
 - 📄 **VSCODE_EXTENSION_GUIDE.md**: Complete extension guide
 - 📄 **PROJECT_SUMMARY.md**: This comprehensive summary
 - 📄 **README.md**: Updated with VS Code extension info
-- 📄 **vscode-extension/README.md**: Extension-specific documentation
+
 
 ### **Built-in Help System**:
 - 🎯 Quick start guides
@@ -140,7 +136,7 @@ wss.on('connection', (ws) => { /* enhanced handlers */ });
 ## 🚀 **What's Ready to Use**
 
 ### **Immediate Usage**:
-1. **Extension Package**: `vscode-extension/mcp-figma-extension-1.0.0.vsix`
+1. **NPM Package**: Available as `ai-figma-mcp` on npm
 2. **Node.js MCP Server**: Fully functional and tested
 3. **WebSocket Server**: Rewritten and optimized for Node.js
 4. **Figma Plugin**: Compatible with the new architecture
