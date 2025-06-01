@@ -155,7 +155,8 @@
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./out/test/runTest.js",
+    "prepackage": "node ./scripts/bundle-mcp.js"
   },
   "devDependencies": {
     "@types/node": "^20.17.57",

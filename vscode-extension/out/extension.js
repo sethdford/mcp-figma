@@ -39,9 +39,7 @@ const vscode = __importStar(require("vscode"));
 const path = __importStar(require("path"));
 const fs = __importStar(require("fs"));
 const os = __importStar(require("os"));
-const child_process_1 = require("child_process");
 let statusBarItem;
-let webSocketProcess = null;
 let mcpFigmaTreeDataProvider;
 function activate(context) {
     console.log('MCP Figma extension is now active!');
@@ -54,18 +52,10 @@ function activate(context) {
     createStatusBarItem(context);
     // Register commands
     registerCommands(context);
-    // Auto-start WebSocket if configured
-    const config = vscode.workspace.getConfiguration('mcpFigma');
-    if (config.get('autoStartWebSocket')) {
-        startWebSocketServer();
-    }
     // Check if MCP is already configured
     checkMcpConfiguration();
 }
 function deactivate() {
-    if (webSocketProcess) {
-        webSocketProcess.kill();
-    }
     if (statusBarItem) {
         statusBarItem.dispose();
     }
@@ -77,7 +67,7 @@ function createStatusBarItem(context) {
     }
     statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
     statusBarItem.command = 'mcpFigma.showStatus';
-    updateStatusBarItem('disconnected');
+    updateStatusBarItem('configured');
     statusBarItem.show();
     context.subscriptions.push(statusBarItem);
 }
@@ -85,35 +75,31 @@ function updateStatusBarItem(status) {
     if (!statusBarItem)
         return;
     const icons = {
-        connected: '$(check)',
-        disconnected: '$(circle-outline)',
-        starting: '$(loading~spin)',
+        configured: '$(check)',
+        not_configured: '$(gear)',
         error: '$(error)'
     };
-    const colors = {
-        connected: '#4CAF50',
-        disconnected: '#9E9E9E',
-        starting: '#FF9800',
-        error: '#F44336'
+    const tooltips = {
+        configured: 'MCP Figma: Configured (click to see details)',
+        not_configured: 'MCP Figma: Not configured (click to setup)',
+        error: 'MCP Figma: Error in configuration'
     };
     statusBarItem.text = `${icons[status]} MCP Figma`;
-    statusBarItem.color = colors[status];
-    statusBarItem.tooltip = `MCP Figma Status: ${status}`;
+    statusBarItem.tooltip = tooltips[status];
 }
 function registerCommands(context) {
-    const commands = [
-        vscode.commands.registerCommand('mcpFigma.setupMcpServer', setupMcpServer),
-        vscode.commands.registerCommand('mcpFigma.startWebSocketServer', startWebSocketServer),
-        vscode.commands.registerCommand('mcpFigma.stopWebSocketServer', stopWebSocketServer),
-        vscode.commands.registerCommand('mcpFigma.restartWebSocketServer', restartWebSocketServer),
-        vscode.commands.registerCommand('mcpFigma.openFigmaPlugin', openFigmaPlugin),
-        vscode.commands.registerCommand('mcpFigma.showStatus', showStatus),
-        vscode.commands.registerCommand('mcpFigma.openDocumentation', openDocumentation),
-        vscode.commands.registerCommand('mcpFigma.testConnection', testConnection)
+    const commandsToRegister = [
+        { commandId: 'mcpFigma.setupMcpServer', handler: () => setupMcpServer(context) },
+        { commandId: 'mcpFigma.openFigmaPlugin', handler: openFigmaPlugin },
+        { commandId: 'mcpFigma.showStatus', handler: showStatus },
+        { commandId: 'mcpFigma.openDocumentation', handler: openDocumentation },
+        { commandId: 'mcpFigma.testConnection', handler: testConnection }
     ];
-    commands.forEach(command => context.subscriptions.push(command));
+    commandsToRegister.forEach(cmd => {
+        context.subscriptions.push(vscode.commands.registerCommand(cmd.commandId, cmd.handler));
+    });
 }
-async function setupMcpServer() {
+async function setupMcpServer(context) {
     const result = await vscode.window.showQuickPick([
         {
             label: '$(gear) Cursor',
@@ -153,43 +139,54 @@ async function setupMcpServer() {
         return;
     const selectedAssistant = result.value;
     try {
-        await configureMcpServer(selectedAssistant);
-        vscode.window.showInformationMessage(`✅ MCP server configured for ${result.label}. Restart your AI assistant to use the new configuration.`, 'Open Documentation').then((selection) => {
+        const messageDetail = await configureMcpServer(selectedAssistant, context);
+        vscode.window.showInformationMessage(`✅ MCP server configured for ${result.label}. ${messageDetail} Restart your AI assistant/IDE to use the new configuration.`, 'Open Documentation').then((selection) => {
             if (selection === 'Open Documentation') {
                 openDocumentation();
             }
         });
     }
     catch (error) {
-        vscode.window.showErrorMessage(`Failed to configure MCP server: ${error}`);
+        vscode.window.showErrorMessage(`Failed to configure MCP server: ${error.message}`);
     }
 }
-async function configureMcpServer(assistant) {
-    const mcpConfig = {
+async function configureMcpServer(assistant, context) {
+    const extensionPath = context.extensionPath;
+    const baseMcpConfig = {
+        "TalkToFigma": {
+            "command": "node",
+            "args": [path.join(extensionPath, "bundled-mcp-server", "server.js")]
+        }
+    };
+    const npxMcpConfig = {
         "TalkToFigma": {
             "command": "npx",
             "args": ["@sethdouglasford/mcp-figma@latest"]
         }
     };
+    let configToUse = baseMcpConfig;
+    let messageDetail = "The bundled MCP server will be used.";
     switch (assistant) {
         case 'cursor':
-            await configureCursor(mcpConfig);
+            await configureCursor(configToUse);
             break;
         case 'github-copilot':
-            await configureVSCode(mcpConfig);
+            await configureVSCode(configToUse);
             break;
         case 'windsurf':
-            await configureWindsurf(mcpConfig);
+            await configureWindsurf(configToUse);
             break;
         case 'claude-desktop':
-            await configureClaudeDesktop(mcpConfig);
+            await configureClaudeDesktop(configToUse);
             break;
         case 'manual':
-            await showManualConfiguration(mcpConfig);
+            await showManualConfiguration(configToUse, npxMcpConfig);
+            messageDetail = "Manual configuration shown. For VS Code, use the node command. For other IDEs, npx is an option.";
             break;
         default:
             throw new Error(`Unsupported assistant: ${assistant}`);
     }
+    return messageDetail;
 }
 async function configureCursor(mcpConfig) {
     const cursorConfigPath = path.join(os.homedir(), '.cursor', 'mcp.json');
@@ -214,15 +211,12 @@ async function configureCursor(mcpConfig) {
 }
 async function configureVSCode(mcpConfig) {
     const config = vscode.workspace.getConfiguration();
-    const existingMcp = config.get('mcp') || {};
-    const updatedMcp = {
-        ...existingMcp,
-        servers: {
-            ...existingMcp.servers,
-            ...mcpConfig
-        }
+    const currentMcpServers = config.get('mcp.servers') || {};
+    const updatedMcpServers = {
+        ...currentMcpServers,
+        ...mcpConfig
     };
-    await config.update('mcp', updatedMcp, vscode.ConfigurationTarget.Global);
+    await config.update('mcp.servers', updatedMcpServers, vscode.ConfigurationTarget.Global);
 }
 async function configureWindsurf(mcpConfig) {
     const windsurfConfigPath = path.join(os.homedir(), '.windsurf', 'mcp.json');
@@ -276,95 +270,29 @@ async function configureClaudeDesktop(mcpConfig) {
     };
     fs.writeFileSync(claudeConfigPath, JSON.stringify(updatedConfig, null, 2));
 }
-async function showManualConfiguration(mcpConfig) {
-    const configText = JSON.stringify({ mcpServers: mcpConfig }, null, 2);
-    const document = await vscode.workspace.openTextDocument({
-        content: configText,
-        language: 'json'
-    });
-    await vscode.window.showTextDocument(document);
-    vscode.window.showInformationMessage('Copy this configuration to your AI assistant\'s MCP configuration file', 'Copy to Clipboard').then((selection) => {
-        if (selection === 'Copy to Clipboard') {
-            vscode.env.clipboard.writeText(configText);
-            vscode.window.showInformationMessage('Configuration copied to clipboard!');
-        }
-    });
+async function showManualConfiguration(bundledConfig, npxConfig) {
+    const bundledJson = JSON.stringify({ mcpServers: bundledConfig }, null, 2);
+    const npxJson = JSON.stringify({ mcpServers: npxConfig }, null, 2);
+    const message = `For seamless integration with this VS Code extension, use the following configuration (points to the bundled server):
+
+\`\`\`json
+${bundledJson}
+\`\`\`
+
+If you need to configure an MCP client outside of this VS Code extension (e.g., in another IDE or a standalone tool), you can use the \`npx\` command (requires internet to fetch the package):
+
+\`\`\`json
+${npxJson}
+\`\`\`
+
+Ensure the package name in the npx command (\`@sethdouglasford/mcp-figma@latest\`) is correct if you are using a different or self-published version.`;
+    const doc = await vscode.workspace.openTextDocument({ content: message, language: 'markdown' });
+    await vscode.window.showTextDocument(doc);
 }
 async function ensureDirectoryExists(dirPath) {
     if (!fs.existsSync(dirPath)) {
         fs.mkdirSync(dirPath, { recursive: true });
     }
-}
-async function startWebSocketServer() {
-    if (webSocketProcess) {
-        vscode.window.showWarningMessage('WebSocket server is already running');
-        return;
-    }
-    updateStatusBarItem('starting');
-    try {
-        const config = vscode.workspace.getConfiguration('mcpFigma');
-        const port = config.get('websocketPort') || 3055;
-        // Find the workspace root or use the extension path
-        const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
-        const socketScriptPath = workspaceRoot ?
-            path.join(workspaceRoot, 'dist', 'socket.js') :
-            path.join(__dirname, '..', '..', 'dist', 'socket.js');
-        if (!fs.existsSync(socketScriptPath)) {
-            throw new Error(`Socket script not found at ${socketScriptPath}. Please run 'npm run build' first.`);
-        }
-        webSocketProcess = (0, child_process_1.spawn)('node', [socketScriptPath], {
-            env: { ...process.env, PORT: port.toString() },
-            cwd: workspaceRoot || __dirname
-        });
-        webSocketProcess.stdout?.on('data', (data) => {
-            console.log(`WebSocket Server: ${data}`);
-            if (data.toString().includes('listening on port')) {
-                updateStatusBarItem('connected');
-                vscode.commands.executeCommand('setContext', 'mcpFigma.webSocketRunning', true);
-                mcpFigmaTreeDataProvider.refresh();
-            }
-        });
-        webSocketProcess.stderr?.on('data', (data) => {
-            console.error(`WebSocket Server Error: ${data}`);
-        });
-        webSocketProcess.on('close', (code) => {
-            console.log(`WebSocket server exited with code ${code}`);
-            webSocketProcess = null;
-            updateStatusBarItem('disconnected');
-            vscode.commands.executeCommand('setContext', 'mcpFigma.webSocketRunning', false);
-            mcpFigmaTreeDataProvider.refresh();
-        });
-        webSocketProcess.on('error', (error) => {
-            console.error('Failed to start WebSocket server:', error);
-            webSocketProcess = null;
-            updateStatusBarItem('error');
-            vscode.window.showErrorMessage(`Failed to start WebSocket server: ${error.message}`);
-        });
-        vscode.window.showInformationMessage(`🚀 WebSocket server starting on port ${port}...`);
-    }
-    catch (error) {
-        updateStatusBarItem('error');
-        vscode.window.showErrorMessage(`Failed to start WebSocket server: ${error}`);
-    }
-}
-async function stopWebSocketServer() {
-    if (!webSocketProcess) {
-        vscode.window.showWarningMessage('WebSocket server is not running');
-        return;
-    }
-    webSocketProcess.kill();
-    webSocketProcess = null;
-    updateStatusBarItem('disconnected');
-    vscode.commands.executeCommand('setContext', 'mcpFigma.webSocketRunning', false);
-    mcpFigmaTreeDataProvider.refresh();
-    vscode.window.showInformationMessage('🛑 WebSocket server stopped');
-}
-async function restartWebSocketServer() {
-    await stopWebSocketServer();
-    // Wait a moment before restarting
-    setTimeout(() => {
-        startWebSocketServer();
-    }, 1000);
 }
 async function openFigmaPlugin() {
     const message = `To install the Figma plugin:
@@ -410,32 +338,30 @@ Need help? Check the documentation for detailed setup instructions.`;
     }
 }
 async function showStatus() {
-    const config = vscode.workspace.getConfiguration('mcpFigma');
-    const port = config.get('websocketPort') || 3055;
-    const isRunning = webSocketProcess !== null;
-    const status = `**MCP Figma Status**
-
-🔌 **WebSocket Server**: ${isRunning ? '✅ Running' : '❌ Stopped'}
-🌐 **Port**: ${port}
-⚙️ **AI Assistant**: ${config.get('aiAssistant')}
-📦 **Auto Start**: ${config.get('autoStartWebSocket') ? 'Enabled' : 'Disabled'}
-
-${isRunning ? '✨ Ready to connect with Figma!' : '⚠️ Start the WebSocket server to begin'}`;
-    const selection = await vscode.window.showInformationMessage(status, ...(isRunning ? ['Test Connection', 'Stop Server'] : ['Start Server']), 'Open Settings');
-    switch (selection) {
-        case 'Start Server':
-            startWebSocketServer();
-            break;
-        case 'Stop Server':
-            stopWebSocketServer();
-            break;
-        case 'Test Connection':
-            testConnection();
-            break;
-        case 'Open Settings':
-            vscode.commands.executeCommand('workbench.action.openSettings', 'mcpFigma');
-            break;
+    const config = vscode.workspace.getConfiguration('mcp');
+    const mcpServers = config.get('servers');
+    const isConfigured = mcpServers && (mcpServers['TalkToFigma'] || mcpServers['TalkToFigmaLocal']);
+    let statusMessage = "**MCP Figma Status**\n\n";
+    if (isConfigured) {
+        statusMessage += "✅ MCP Server is configured in VS Code settings.\n";
+        statusMessage += "Ensure the Figma plugin is running and you have joined a channel via your AI assistant.\n";
+        statusMessage += `Configuration: \`node ${mcpServers?.TalkToFigma?.args?.[0] || 'path/to/server.js'}\`\n`;
+        updateStatusBarItem('configured');
     }
+    else {
+        statusMessage += "❌ MCP Server is NOT configured in VS Code settings.\n";
+        statusMessage += "Use the \"Setup MCP Server\" command to configure it.\n";
+        updateStatusBarItem('not_configured');
+    }
+    vscode.window.showInformationMessage(statusMessage, 'Setup MCP Server', 'Open Documentation').then(selection => {
+        if (selection === 'Setup MCP Server') {
+            vscode.commands.executeCommand('mcpFigma.setupMcpServer');
+        }
+        else if (selection === 'Open Documentation') {
+            openDocumentation();
+        }
+    });
+    mcpFigmaTreeDataProvider.refresh(); // Refresh tree view
 }
 async function openDocumentation() {
     const selection = await vscode.window.showQuickPick([
@@ -473,41 +399,37 @@ async function openDocumentation() {
     }
 }
 async function testConnection() {
-    if (!webSocketProcess) {
-        vscode.window.showWarningMessage('WebSocket server is not running. Start it first.');
-        return;
-    }
-    const config = vscode.workspace.getConfiguration('mcpFigma');
-    const port = config.get('websocketPort') || 3055;
-    try {
-        // Test WebSocket connection
-        const WebSocket = require('ws');
-        const ws = new WebSocket(`ws://localhost:${port}`);
-        ws.on('open', () => {
-            vscode.window.showInformationMessage('✅ WebSocket connection successful!');
-            ws.close();
-        });
-        ws.on('error', (error) => {
-            vscode.window.showErrorMessage(`❌ WebSocket connection failed: ${error.message}`);
-        });
-    }
-    catch (error) {
-        vscode.window.showErrorMessage(`❌ Connection test failed: ${error}`);
-    }
+    // Since the extension no longer directly manages the server process,
+    // a direct "test" is harder. We can guide the user.
+    vscode.window.showInformationMessage('To test the MCP Figma connection:\n1. Ensure MCP server is configured (run "Setup MCP Server").\n2. Ensure the Figma plugin is open in Figma and you have a channel ID.\n3. Use your AI Assistant (e.g., Copilot Chat, Cursor) to run: "@TalkToFigma join_channel channel YOUR_CHANNEL_ID_HERE" then "@TalkToFigma get_document_info".\n4. Check the MCP server output/logs if issues arise.', { modal: true });
 }
 async function checkMcpConfiguration() {
-    // Check if MCP is configured in the current environment
-    const config = vscode.workspace.getConfiguration();
-    const mcpConfig = config.get('mcp');
-    if (!mcpConfig || !mcpConfig.servers?.TalkToFigma) {
-        // Show notification to set up MCP
-        const selection = await vscode.window.showInformationMessage('🎨 MCP Figma is not configured. Set it up now to start using AI-powered Figma automation!', 'Setup Now', 'Don\'t Show Again');
+    const config = vscode.workspace.getConfiguration('mcp');
+    const mcpServers = config.get('servers');
+    const isConfigured = mcpServers && (mcpServers['TalkToFigma'] ||
+        mcpServers['TalkToFigmaLocal'] // Check for old or new name
+    );
+    if (isConfigured) {
+        updateStatusBarItem('configured');
+        console.log('MCP Figma server appears to be configured.');
+    }
+    else {
+        updateStatusBarItem('not_configured');
+        console.log('MCP Figma server not found in configuration.');
+        // Check if we should prompt the user
+        const memento = vscode.extensions.getExtension('sethdford.mcp-figma-extension')?.exports?.memento; // Assuming memento is exported
+        if (memento && memento.get('dontShowSetupPrompt')) {
+            return;
+        }
+        const selection = await vscode.window.showInformationMessage('MCP server for Figma is not configured. Setup now?', 'Setup Now', 'Don\'t Show Again');
         if (selection === 'Setup Now') {
-            setupMcpServer();
+            vscode.commands.executeCommand('mcpFigma.setupMcpServer');
         }
         else if (selection === 'Don\'t Show Again') {
             // Store user preference
-            await config.update('mcpFigma.hideSetupNotification', true, vscode.ConfigurationTarget.Global);
+            if (memento) {
+                memento.update('dontShowSetupPrompt', true);
+            }
         }
     }
 }
@@ -523,75 +445,40 @@ class McpFigmaTreeDataProvider {
         return element;
     }
     getChildren(element) {
-        if (!element) {
+        if (element) {
+            // For sub-items if any (e.g. under 'status')
+            return Promise.resolve([]);
+        }
+        else {
             // Root items
+            const config = vscode.workspace.getConfiguration('mcp');
+            const mcpServers = config.get('servers');
+            const isConfigured = mcpServers && (mcpServers['TalkToFigma'] || mcpServers['TalkToFigmaLocal']);
+            const statusLabel = isConfigured ? 'Status: Configured' : 'Status: Not Configured';
             return Promise.resolve([
-                new TreeItem('WebSocket Server', vscode.TreeItemCollapsibleState.Expanded, 'server'),
-                new TreeItem('MCP Configuration', vscode.TreeItemCollapsibleState.Expanded, 'config'),
-                new TreeItem('Figma Plugin', vscode.TreeItemCollapsibleState.Expanded, 'plugin'),
-                new TreeItem('Documentation', vscode.TreeItemCollapsibleState.Collapsed, 'docs')
+                new TreeItem(statusLabel, vscode.TreeItemCollapsibleState.None, 'status', 'mcpFigma.showStatus', new vscode.ThemeIcon(isConfigured ? 'symbol-event' : 'error')),
+                new TreeItem('Setup MCP Server', vscode.TreeItemCollapsibleState.None, 'command', 'mcpFigma.setupMcpServer', new vscode.ThemeIcon('tools')),
+                new TreeItem('Open Figma Plugin Instructions', vscode.TreeItemCollapsibleState.None, 'command', 'mcpFigma.openFigmaPlugin', new vscode.ThemeIcon('plug')),
+                new TreeItem('Open Documentation', vscode.TreeItemCollapsibleState.None, 'command', 'mcpFigma.openDocumentation', new vscode.ThemeIcon('book')),
+                new TreeItem('Test Connection Guide', vscode.TreeItemCollapsibleState.None, 'command', 'mcpFigma.testConnection', new vscode.ThemeIcon('beaker'))
             ]);
         }
-        else if (element.type === 'server') {
-            const isRunning = webSocketProcess !== null;
-            return Promise.resolve([
-                new TreeItem(isRunning ? '✅ Running' : '❌ Stopped', vscode.TreeItemCollapsibleState.None, 'status', isRunning ? 'mcpFigma.stopWebSocketServer' : 'mcpFigma.startWebSocketServer'),
-                new TreeItem('Test Connection', vscode.TreeItemCollapsibleState.None, 'test', 'mcpFigma.testConnection')
-            ]);
-        }
-        else if (element.type === 'config') {
-            return Promise.resolve([
-                new TreeItem('Setup MCP Server', vscode.TreeItemCollapsibleState.None, 'setup', 'mcpFigma.setupMcpServer'),
-                new TreeItem('Open Settings', vscode.TreeItemCollapsibleState.None, 'settings', 'workbench.action.openSettings')
-            ]);
-        }
-        else if (element.type === 'plugin') {
-            return Promise.resolve([
-                new TreeItem('Installation Guide', vscode.TreeItemCollapsibleState.None, 'guide', 'mcpFigma.openFigmaPlugin')
-            ]);
-        }
-        else if (element.type === 'docs') {
-            return Promise.resolve([
-                new TreeItem('Open Documentation', vscode.TreeItemCollapsibleState.None, 'docs', 'mcpFigma.openDocumentation')
-            ]);
-        }
-        return Promise.resolve([]);
     }
 }
 class TreeItem extends vscode.TreeItem {
-    constructor(label, collapsibleState, type, commandId) {
+    constructor(label, collapsibleState, type, // e.g., 'status', 'command'
+    commandId, iconPath) {
         super(label, collapsibleState);
         this.label = label;
         this.collapsibleState = collapsibleState;
         this.type = type;
         this.commandId = commandId;
+        this.iconPath = iconPath;
         this.tooltip = this.label;
         if (commandId) {
-            this.command = {
-                command: commandId,
-                title: this.label
-            };
+            this.command = { command: commandId, title: this.label };
         }
-        // Set icons based on type
-        switch (type) {
-            case 'server':
-                this.iconPath = new vscode.ThemeIcon('server');
-                break;
-            case 'config':
-                this.iconPath = new vscode.ThemeIcon('gear');
-                break;
-            case 'plugin':
-                this.iconPath = new vscode.ThemeIcon('extensions');
-                break;
-            case 'docs':
-                this.iconPath = new vscode.ThemeIcon('book');
-                break;
-            case 'status':
-                this.iconPath = new vscode.ThemeIcon(webSocketProcess ? 'check' : 'circle-outline');
-                break;
-            default:
-                this.iconPath = new vscode.ThemeIcon('circle-outline');
-        }
+        this.iconPath = iconPath || (type === 'command' ? new vscode.ThemeIcon('chevron-right') : undefined);
     }
 }
 //# sourceMappingURL=extension.js.map

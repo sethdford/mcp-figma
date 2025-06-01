@@ -160,11 +160,9 @@ const wss = new WebSocketServer({
 
 wss.on('connection', handleConnection);
 
-const PORT = 3055;
-// Uncomment this to allow connections in windows wsl
-// const HOST = "0.0.0.0";
-const HOST = "localhost";
+const PORT = process.env.FIGMA_WEBSOCKET_PORT ? parseInt(process.env.FIGMA_WEBSOCKET_PORT, 10) : 3055;
+const HOST = process.env.FIGMA_WEBSOCKET_HOST || "localhost";
 
 server.listen(PORT, HOST, () => {
-  console.log(`WebSocket server running on port ${PORT}`);
+  console.log(`WebSocket server started on host ${HOST} port ${PORT}`);
 });

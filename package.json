@@ -1,11 +1,11 @@
 {
-  "name": "@sethdouglasford/mcp-figma",
+  "name": "ai-figma-mcp",
   "description": "AI-powered Figma MCP server for Cursor, GitHub Copilot, Windsurf and other AI assistants",
   "version": "1.0.6",
   "module": "dist/talk_to_figma_mcp/server.js",
   "main": "dist/talk_to_figma_mcp/server.js",
   "bin": {
-    "mcp-figma": "dist/talk_to_figma_mcp/server.js"
+    "ai-figma-mcp": "dist/talk_to_figma_mcp/server.js"
   },
   "files": [
     "dist",

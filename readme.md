@@ -7,7 +7,7 @@ This project implements a Model Context Protocol (MCP) integration between AI co
 This MCP server works with all major AI-powered coding assistants:
 
 - ✅ **Cursor** - Full MCP support with Agent mode
-- ✅ **GitHub Copilot** (VS Code, JetBrains, Eclipse, Xcode) - Native MCP support  
+- ✅ **GitHub Copilot** (VS Code, JetBrains, Eclipse, Xcode) - Native MCP support
 - ✅ **Windsurf** - Built-in MCP integration with Cascade agent
 - ✅ **Claude Desktop** - Anthropic's flagship MCP client
 - ✅ **VS Code** with GitHub Copilot extension
@@ -20,7 +20,7 @@ https://github.com/user-attachments/assets/129a14d2-ed73-470f-9a4c-2240b2a4885c
 
 - `src/talk_to_figma_mcp/` - TypeScript MCP server for Figma integration
 - `src/cursor_mcp_plugin/` - Figma plugin for communicating with AI assistants (Cursor, GitHub Copilot, Windsurf, Claude Desktop, etc.)
-- `src/socket.ts` - WebSocket server that facilitates communication between the MCP server and Figma plugin
+- `src/socket.ts` - WebSocket server that facilitates communication between the MCP server and Figma plugin (started automatically by the MCP server)
 
 ## Quick Setup Guide
 
@@ -37,19 +37,14 @@ node --version
 
 ### Installation
 
-1. **Setup the project:**
+1. **Setup the project (downloads dependencies and builds):**
 ```bash
 npm run setup
 ```
 
-2. **Start the WebSocket server:**
+2. **Start the MCP server (this will also start the WebSocket server automatically):**
 ```bash
-npm run socket
-```
-
-3. **Start the MCP server:**
-```bash
-npx @sethdouglasford/mcp-figma
+npx ai-figma-mcp
 ```
 
 ## AI Assistant Configuration
@@ -64,14 +59,14 @@ GitHub Copilot has native MCP support across all major IDEs.
 
 1. Open Command Palette (`Cmd+Shift+P` on macOS, `Ctrl+Shift+P` on Windows/Linux)
 2. Type **"MCP: Add Server"** and select it
-3. Choose `HTTP (sse)` as the server type  
+3. Choose `HTTP (sse)` as the server type
 4. Enter MCP configuration:
    ```json
    {
      "mcpServers": {
        "TalkToFigma": {
          "command": "npx",
-         "args": ["@sethdouglasford/mcp-figma@latest"]
+         "args": ["ai-figma-mcp@latest"]
        }
      }
    }
@@ -86,7 +81,7 @@ Add to your VS Code `settings.json`:
     "servers": {
       "TalkToFigma": {
         "command": "npx",
-        "args": ["@sethdouglasford/mcp-figma@latest"]
+        "args": ["ai-figma-mcp@latest"]
       }
     }
   }
@@ -104,7 +99,7 @@ Add to your VS Code `settings.json`:
      "servers": {
        "TalkToFigma": {
          "command": "npx",
-         "args": ["@sethdouglasford/mcp-figma@latest"]
+         "args": ["ai-figma-mcp@latest"]
        }
      }
    }
@@ -136,7 +131,7 @@ Cursor has excellent MCP support with Agent mode.
      "mcpServers": {
        "TalkToFigma": {
          "command": "npx",
-         "args": ["@sethdouglasford/mcp-figma@latest"]
+         "args": ["ai-figma-mcp@latest"]
        }
      }
    }
@@ -158,7 +153,7 @@ Windsurf has native MCP support with its Cascade agent.
      "servers": {
        "TalkToFigma": {
          "command": "npx",
-         "args": ["@sethdouglasford/mcp-figma@latest"]
+         "args": ["ai-figma-mcp@latest"]
        }
      }
    }
@@ -177,7 +172,7 @@ Windsurf has native MCP support with its Cascade agent.
      "mcpServers": {
        "TalkToFigma": {
          "command": "npx",
-         "args": ["@sethdouglasford/mcp-figma@latest"]
+         "args": ["ai-figma-mcp@latest"]
        }
      }
    }
@@ -238,45 +233,47 @@ Propagate component instance overrides from a source instance to multiple target
 
 ## Manual Setup and Installation
 
-### MCP Server: Integration with Cursor
+### MCP Server: Integration with AI Assistants
 
-Add the server to your Cursor MCP configuration in `~/.cursor/mcp.json`:
+For manual configuration or if your AI assistant requires it, you can point directly to the server script. After running `npm run setup` (which includes `npm run build`), the server script will be at `dist/talk_to_figma_mcp/server.js` within this project's directory.
 
+Example for Cursor's `mcp.json`:
 ```json
 {
   "mcpServers": {
-    "TalkToFigma": {
-      "command": "npx",
-      "args": ["@sethdouglasford/mcp-figma@latest"]
+    "TalkToFigmaLocal": {
+      "command": "node",
+      "args": ["/path/to/your/project/dist/talk_to_figma_mcp/server.js"]
     }
   }
 }
 ```
-
-### WebSocket Server
-
-Start the WebSocket server:
-
-```bash
-npm run socket
-```
+Replace `/path/to/your/project/` with the actual absolute path to this cloned repository. The MCP server will automatically start the WebSocket server.
 
 ### Figma Plugin
 
 **Option 1: From Figma Community (Recommended)**
-1. Go to [MCP Figma Plugin on Figma Community](https://www.figma.com/community/plugin/mcp-figma-plugin) (coming soon)
-2. Click "Install" 
+1. Go to [MCP Figma Plugin on Figma Community](https://www.figma.com/community/plugin/1485687494525374295/mcp-figma-plugin)
+2. Click "Install"
 3. The plugin will be available in your Figma plugins menu
 
 **Option 2: Manual Installation (Development)**
 1. In Figma, go to Plugins > Development > New Plugin
 2. Choose "Link existing plugin"
-3. Select the `src/mcp_plugin/manifest.json` file
-4. The plugin should now be available in your Figma development plugins
+3. Select the `src/cursor_mcp_plugin/manifest.json` file from this project.
+4. The plugin should now be available in your Figma development plugins.
+
+## Usage
+
+1. **Start the MCP Server**: Run `npx ai-figma-mcp` in your terminal. This also starts the WebSocket server.
+2. **Configure your AI Assistant**: Follow the instructions in the "AI Assistant Configuration" section for your specific assistant to recognize the MCP server.
+3. **Open Figma and run the MCP Figma Plugin**: Find it in your plugins list.
+4. **Connect**: In your AI assistant, use a command like `"Join Figma channel abcdefg"` (replace `abcdefg` with the channel ID displayed in the Figma plugin).
+5. **Interact**: Start giving commands to your AI assistant to interact with Figma.
 
 ## Advanced Configuration
 
-### Repository-Level Configuration
+### Repository-Level Configuration (GitHub Copilot)
 
 For **GitHub Copilot coding agent**, you can configure MCP servers at the repository level:
 
@@ -288,7 +285,7 @@ For **GitHub Copilot coding agent**, you can configure MCP servers at the reposi
      "mcpServers": {
        "TalkToFigma": {
          "command": "npx",
-         "args": ["@sethdouglasford/mcp-figma@latest"],
+         "args": ["ai-figma-mcp@latest"],
          "tools": ["*"]
        }
      }
@@ -297,64 +294,79 @@ For **GitHub Copilot coding agent**, you can configure MCP servers at the reposi
 
 ### Environment Variables
 
-For enhanced functionality, you can set environment variables:
+The MCP server respects the following environment variables:
 
-```bash
-# Optional: Custom WebSocket port
-export FIGMA_WEBSOCKET_PORT=3055
-
-# Optional: Debug mode
-export DEBUG=true
-```
+- `FIGMA_WEBSOCKET_PORT`: (Optional) Custom port for the WebSocket server. Defaults to `3055`.
+  ```bash
+  export FIGMA_WEBSOCKET_PORT=3056
+  ```
+- `DEBUG`: (Optional) Set to `true` for more verbose logging from the MCP server.
+  ```bash
+  export DEBUG=true
+  ```
+If you are running the MCP server via `npx`, these variables should be set in the environment where you run the `npx` command.
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **MCP Server not found**
-   - Ensure Node.js is installed and `npx` is available
-   - Try running `npx @sethdouglasford/mcp-figma` manually
+1.  **MCP Server not found or `npx` command fails:**
+    *   Ensure Node.js (v18+) is installed and that `npx` is available in your system's PATH.
+    *   Try running `npx ai-figma-mcp --version` manually in your terminal to see if it executes.
+    *   If you've recently published or updated the package, there might be a delay for the npm registry. Try `npx ai-figma-mcp@latest` or `npm cache clean --force` then try `npx` again.
 
-2. **WebSocket connection failed**
-   - Check if the socket server is running: `npm run socket`
-   - Verify the port 3055 is not blocked
+2.  **WebSocket connection failed / No connection to Figma plugin:**
+    *   **Check MCP Server Logs**: The MCP server (e.g., `npx @sethdouglasford/mcp-figma`) automatically starts the WebSocket server. Examine the console output from the MCP server for any errors related to "Socket script not found", "Starting WebSocket server", or "WebSocket server process exited".
+    *   **Port Conflicts**: Ensure the port `3055` (or your configured `FIGMA_WEBSOCKET_PORT`) is not being used by another application. You can check this with `lsof -i :3055` (macOS/Linux) or `netstat -ano | findstr "3055"` (Windows).
+    *   **Firewall**: Verify that your firewall is not blocking connections on the WebSocket port.
+    *   **Figma Plugin Channel**: Double-check that the channel ID you used with the `join_channel` command in your AI assistant matches the channel ID displayed in the Figma plugin UI.
+    *   **WSL Issues**: If using Windows Subsystem for Linux (WSL), see the "Windows + WSL Guide".
 
-3. **AI Assistant not recognizing tools**
-   - Make sure you're in **Agent mode** (not Ask mode)
-   - Restart your IDE after adding MCP configuration
-   - Check the MCP server status in settings
+3.  **AI Assistant not recognizing tools / MCP server not listed:**
+    *   **Correct Configuration**: Double-check the JSON configuration in your AI assistant's settings. Typos in the command (`npx`), package name (`@sethdouglasford/mcp-figma`), or arguments can cause issues.
+    *   **Agent Mode**: Ensure your AI assistant is in "Agent" or "Tools" mode, not just a simple "Chat" or "Ask" mode.
+    *   **Restart Assistant/IDE**: After adding or modifying the MCP configuration, restart your AI assistant or IDE (Cursor, VS Code, etc.).
+    *   **MCP Server Status**: Some assistants might show the status of connected MCP servers in their settings or a dedicated panel. Check if "TalkToFigma" (or the name you used) is listed and if there are any error messages.
 
-4. **Permission issues**
-   - Ensure the Figma plugin is installed and running
-   - Check that the plugin has proper permissions
+4.  **Permission issues with Figma Plugin:**
+    *   Ensure the MCP Figma Plugin is installed and actively running in your Figma file.
+    *   The plugin needs to be the active window/context in Figma for some operations.
 
 ## Windows + WSL Guide
 
-1. **Install Node.js in WSL:**
-```bash
-node --version
-npm --version
-```
+If you are running the MCP server (Node.js part) within WSL and Figma on Windows:
 
-2. **Update socket configuration** in `src/socket.ts`:
-```typescript
-// Uncomment this line for WSL
-const HOST = "0.0.0.0";
-// const HOST = "localhost";
-```
+1.  **Node.js in WSL**: Ensure Node.js v18+ is installed in your WSL distribution.
+    ```bash
+    node --version
+    npm --version
+    ```
+2.  **Host Configuration for WebSocket Server**:
+    The WebSocket server (`src/socket.ts`) by default listens on `localhost`. When running the MCP server in WSL and the Figma plugin on Windows, the plugin needs to connect to WSL's IP address.
+    *   Modify `src/socket.ts` in your local project:
+        ```typescript
+        // const HOST = process.env.WS_HOST || 'localhost';
+        const HOST = process.env.WS_HOST || '0.0.0.0'; // Change 'localhost' to '0.0.0.0'
+        ```
+    *   Rebuild the project: `npm run build`.
+    *   When you run the MCP server (e.g., `npx ai-figma-mcp`), it will now use the `socket.js` that listens on `0.0.0.0`.
+3.  **Figma Plugin Connection**:
+    *   In the Figma plugin, when it asks for the WebSocket server address, you'll need to provide the IP address of your WSL instance. You can find this by running `hostname -I` in your WSL terminal.
+    *   For example, if `hostname -I` gives `172.23.x.x`, you'd enter `ws://172.23.x.x:3055` (or your configured port) into the Figma plugin.
+    *   **Alternatively**: Instead of modifying the plugin, if your `npx` command runs the server from your WSL environment, the MCP server will start the socket server within WSL. The Figma plugin on Windows then needs to connect to `ws://<WSL_IP_ADDRESS>:<PORT>`. The `join_channel` command from your AI assistant (which also runs in WSL or connects to the MCP server in WSL) will correctly interact with this setup. The crucial part is that the Figma plugin on Windows must be able to reach the WebSocket server running inside WSL.
+4.  **Port Forwarding (If needed)**:
+    In some WSL setups, you might need to explicitly forward the port from Windows to WSL.
+    ```powershell
+    # Run in PowerShell as Administrator on Windows
+    netsh interface portproxy add v4tov4 listenport=3055 listenaddress=0.0.0.0 connectport=3055 connectaddress=<Your_WSL_IP_Address>
+    ```
+    And to remove it:
+    ```powershell
+    netsh interface portproxy delete v4tov4 listenport=3055 listenaddress=0.0.0.0
+    ```
+    Replace `<Your_WSL_IP_Address>` with the actual IP of your WSL instance.
 
-3. **Start the WebSocket server:**
-```bash
-npm run socket
-```
-
-## Usage
-
-1. Start the WebSocket server
-2. Install the MCP server in Cursor
-3. Open Figma and run the Cursor MCP Plugin
-4. Connect the plugin to the WebSocket server by joining a channel using `join_channel`
-5. Use Cursor to communicate with Figma using the MCP tools
+The primary change here is that the `npm run socket` step is removed from the "Windows + WSL Guide" because the MCP server handles starting the socket server. The instruction to modify `src/socket.ts` to listen on `0.0.0.0` is still relevant for WSL scenarios if users are building from source and need the WebSocket server to be accessible from Windows. If they are using the `npx` published package, they cannot directly modify `src/socket.ts`. The `FIGMA_WEBSOCKET_HOST` environment variable would be a better way to control this for the packaged version, which we should add to `socket.ts`.
 
 ## MCP Tools
 
@@ -447,23 +459,20 @@ The MCP server includes several helper prompts to guide you through complex desi
 ### Building the Figma Plugin
 
 1. Navigate to the Figma plugin directory:
-
-   ```
+   \`\`\`
    cd src/cursor_mcp_plugin
-   ```
-
-2. Edit code.js and ui.html
+   \`\`\`
+2. Edit `code.js` and `ui.html`.
 
 ### Building the Project
 
-To build the TypeScript files:
-
+To build the TypeScript files for the MCP server and WebSocket server:
 ```bash
 npm run build
 ```
+This will output files to the `dist` directory.
 
-To watch for changes during development:
-
+To watch for changes and rebuild automatically during development:
 ```bash
 npm run dev
 ```
@@ -472,37 +481,31 @@ npm run dev
 
 When working with the Figma MCP:
 
-1. Always join a channel before sending commands
-2. Get document overview using `get_document_info` first
-3. Check current selection with `get_selection` before modifications
-4. Use appropriate creation tools based on needs:
-   - `create_frame` for containers
-   - `create_rectangle` for basic shapes
-   - `create_text` for text elements
-5. Verify changes using `get_node_info`
-6. Use component instances when possible for consistency
-7. Handle errors appropriately as all commands can throw exceptions
-8. For large designs:
-   - Use chunking parameters in `scan_text_nodes`
-   - Monitor progress through WebSocket updates
-   - Implement appropriate error handling
-9. For text operations:
-   - Use batch operations when possible
-   - Consider structural relationships
-   - Verify changes with targeted exports
+1.  Always join a channel before sending commands to ensure the MCP server is connected to the correct Figma plugin instance.
+2.  Get an overview of the document using `get_document_info` first.
+3.  Check the current selection with `get_selection` before making modifications intended for selected items.
+4.  Use the appropriate creation tools based on needs:
+    *   `create_frame` for containers that might hold other elements or use auto-layout.
+    *   `create_rectangle` for basic vector shapes.
+    *   `create_text` for text elements.
+5.  Verify changes using `get_node_info` or by visually inspecting Figma.
+6.  Utilize component instances (`create_component_instance`, `get_instance_overrides`, `set_instance_overrides`) for design consistency and efficiency.
+7.  Handle potential errors gracefully, as all commands can throw exceptions (e.g., if a node ID is not found, or parameters are invalid).
+8.  For large designs:
+    *   Use chunking parameters if available in tools like `scan_text_nodes`.
+    *   Monitor progress messages if provided by the tool for long operations.
+9.  For text operations:
+    *   Use batch operations like `set_multiple_text_contents` when possible for better performance.
 10. For converting legacy annotations:
-    - Scan text nodes to identify numbered markers and descriptions
-    - Use `scan_nodes_by_types` to find UI elements that annotations refer to
-    - Match markers with their target elements using path, name, or proximity
-    - Categorize annotations appropriately with `get_annotations`
-    - Create native annotations with `set_multiple_annotations` in batches
-    - Verify all annotations are properly linked to their targets
-    - Delete legacy annotation nodes after successful conversion
-11. Visualize prototype noodles as FigJam connectors:
-
-- Use `get_reactions` to extract prototype flows,
-- set a default connector with `set_default_connector`,
-- and generate connector lines with `create_connections` for clear visual flow mapping.
+    *   Scan text nodes to identify markers and descriptions.
+    *   Use `scan_nodes_by_types` to find UI elements that annotations refer to.
+    *   Match markers with their target elements.
+    *   Categorize annotations appropriately.
+    *   Create native annotations with `set_multiple_annotations` in batches.
+11. Visualize prototype interactions as FigJam connectors:
+    *   Use `get_reactions` to extract prototype flows.
+    *   Set a default connector style using `set_default_connector` (by copying a FigJam connector first).
+    *   Generate connector lines with `create_connections`.
 
 ## License
 
