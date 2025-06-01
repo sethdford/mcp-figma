@@ -38,96 +38,96 @@ function handleConnection(ws: WebSocket) {
   });
 
   ws.on('message', (message: Buffer) => {
-    try {
+      try {
       console.log("Received message from client:", message.toString());
       const data = JSON.parse(message.toString());
 
-      if (data.type === "join") {
-        const channelName = data.channel;
-        if (!channelName || typeof channelName !== "string") {
-          ws.send(JSON.stringify({
-            type: "error",
-            message: "Channel name is required"
-          }));
-          return;
-        }
-
-        // Create channel if it doesn't exist
-        if (!channels.has(channelName)) {
-          channels.set(channelName, new Set());
-        }
-
-        // Add client to channel
-        const channelClients = channels.get(channelName)!;
-        channelClients.add(ws);
-
-        // Notify client they joined successfully
-        ws.send(JSON.stringify({
-          type: "system",
-          message: `Joined channel: ${channelName}`,
-          channel: channelName
-        }));
-
-        console.log("Sending message to client:", data.id);
-
-        ws.send(JSON.stringify({
-          type: "system",
-          message: {
-            id: data.id,
-            result: "Connected to channel: " + channelName,
-          },
-          channel: channelName
-        }));
-
-        // Notify other clients in channel
-        channelClients.forEach((client) => {
-          if (client !== ws && client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify({
-              type: "system",
-              message: "A new user has joined the channel",
-              channel: channelName
+        if (data.type === "join") {
+          const channelName = data.channel;
+          if (!channelName || typeof channelName !== "string") {
+            ws.send(JSON.stringify({
+              type: "error",
+              message: "Channel name is required"
             }));
+            return;
           }
-        });
-        return;
-      }
 
-      // Handle regular messages
-      if (data.type === "message") {
-        const channelName = data.channel;
-        if (!channelName || typeof channelName !== "string") {
+          // Create channel if it doesn't exist
+          if (!channels.has(channelName)) {
+            channels.set(channelName, new Set());
+          }
+
+          // Add client to channel
+          const channelClients = channels.get(channelName)!;
+          channelClients.add(ws);
+
+          // Notify client they joined successfully
           ws.send(JSON.stringify({
-            type: "error",
-            message: "Channel name is required"
+            type: "system",
+            message: `Joined channel: ${channelName}`,
+            channel: channelName
           }));
+
+          console.log("Sending message to client:", data.id);
+
+          ws.send(JSON.stringify({
+            type: "system",
+            message: {
+              id: data.id,
+              result: "Connected to channel: " + channelName,
+            },
+            channel: channelName
+          }));
+
+          // Notify other clients in channel
+          channelClients.forEach((client) => {
+            if (client !== ws && client.readyState === WebSocket.OPEN) {
+              client.send(JSON.stringify({
+                type: "system",
+                message: "A new user has joined the channel",
+                channel: channelName
+              }));
+            }
+          });
           return;
         }
 
-        const channelClients = channels.get(channelName);
-        if (!channelClients || !channelClients.has(ws)) {
-          ws.send(JSON.stringify({
-            type: "error",
-            message: "You must join the channel first"
-          }));
-          return;
-        }
-
-        // Broadcast to all clients in the channel
-        channelClients.forEach((client) => {
-          if (client.readyState === WebSocket.OPEN) {
-            console.log("Broadcasting message to client:", data.message);
-            client.send(JSON.stringify({
-              type: "broadcast",
-              message: data.message,
-              sender: client === ws ? "You" : "User",
-              channel: channelName
+        // Handle regular messages
+        if (data.type === "message") {
+          const channelName = data.channel;
+          if (!channelName || typeof channelName !== "string") {
+            ws.send(JSON.stringify({
+              type: "error",
+              message: "Channel name is required"
             }));
+            return;
           }
-        });
+
+          const channelClients = channels.get(channelName);
+          if (!channelClients || !channelClients.has(ws)) {
+            ws.send(JSON.stringify({
+              type: "error",
+              message: "You must join the channel first"
+            }));
+            return;
+          }
+
+          // Broadcast to all clients in the channel
+          channelClients.forEach((client) => {
+            if (client.readyState === WebSocket.OPEN) {
+              console.log("Broadcasting message to client:", data.message);
+              client.send(JSON.stringify({
+                type: "broadcast",
+                message: data.message,
+                sender: client === ws ? "You" : "User",
+                channel: channelName
+              }));
+            }
+          });
+        }
+      } catch (err) {
+        console.error("Error handling message:", err);
       }
-    } catch (err) {
-      console.error("Error handling message:", err);
-    }
   });
 }
 

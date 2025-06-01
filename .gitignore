@@ -2,3 +2,8 @@ node_modules/
 .cursor/
 dist/
 docs/
+
+cursor-mcp-config.json
+join-bh5o6f9d.cjs
+manual-join.cjs
+test-figma-connection.cjs
