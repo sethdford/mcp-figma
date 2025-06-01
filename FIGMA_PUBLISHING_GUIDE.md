@@ -104,29 +104,58 @@ Update manifest.json if needed:
 
 4. **Fill Plugin Details**
    - **Name**: MCP Figma Plugin
-   - **Tagline**: "Connect Figma to AI assistants using Model Context Protocol"
+   - **Tagline**: "Connect Figma to AI assistants for automated design"
+   - **Category**: Productivity (Primary) or Developer Tools (Secondary)
    - **Description**: 
      ```
-     Enable AI assistants like Cursor, GitHub Copilot, Windsurf, and Claude Desktop to interact directly with your Figma designs through the Model Context Protocol (MCP).
+     🤖 Transform your design workflow with AI automation
 
-     Features:
-     • Real-time design automation with AI assistants
-     • Read and modify design elements programmatically  
-     • Seamless integration with popular AI coding tools
-     • Support for text replacement, component creation, and layout management
-     • WebSocket-based communication for instant responses
+     Connect your favorite AI assistants directly to Figma for unprecedented design automation capabilities. This plugin bridges the gap between design and development by enabling AI tools to read, modify, and enhance your Figma designs in real-time.
 
-     Compatible with:
+     ✨ Key Features:
+     • Universal AI Integration - Works with Cursor, GitHub Copilot, Windsurf, Claude Desktop, Zed, and more
+     • Real-time Design Automation - Modify layouts, update text, and create components instantly
+     • Intelligent Design Reading - AI can analyze your designs and provide insights
+     • Bulk Operations - Update multiple elements, replace text content, and propagate changes efficiently
+     • Component Management - Create instances, apply overrides, and manage design systems
+     • Annotation Support - Generate and manage design annotations programmatically
+     • Layout Automation - Auto-layout configuration, spacing, and alignment controls
+
+     🎯 Perfect for:
+     - Developers building design systems and converting designs to code
+     - Designers who want to automate repetitive tasks and maintain consistency
+     - Product Teams streamlining design-to-development handoffs
+     - AI Enthusiasts exploring the future of design automation
+
+     ⚡ Getting Started:
+     1. Install the MCP server: npm install -g @sethdouglasford/mcp-figma
+     2. Configure your AI assistant with MCP support
+     3. Run the WebSocket bridge: npm run socket
+     4. Start automating your designs with natural language commands!
+
+     🔧 Compatible AI Assistants:
      ✅ Cursor (Agent mode)
      ✅ GitHub Copilot (VS Code, JetBrains, Eclipse, Xcode)
      ✅ Windsurf (Cascade agent)
      ✅ Claude Desktop
      ✅ Zed, Neovim, and other MCP-compatible tools
 
-     Setup is simple: install the MCP server, run the WebSocket bridge, and start designing with AI assistance!
+     🌟 Example Use Cases:
+     - "Update all heading text to use the new brand font"
+     - "Create a consistent button component with proper spacing"
+     - "Analyze this design for accessibility issues"
+     - "Generate documentation for this component library"
+
+     🔒 Privacy & Security:
+     - All communication happens locally through WebSocket
+     - No data is sent to external servers
+     - Open source and transparent
+
+     Ready to supercharge your design workflow? Install now and experience the future of AI-powered design automation!
+
+     📚 Documentation: https://github.com/sethdford/mcp-figma
      ```
-   - **Tags**: ai, automation, mcp, cursor, copilot, windsurf, claude, productivity, development
-   - **Category**: Productivity or Developer Tools
+   - **Tags**: ai, automation, mcp, cursor, copilot, windsurf, claude, productivity, development, design-system, workflow, api, integration, real-time, component, layout, text-replacement, annotation
 
 5. **Upload Assets**
    - **Icon**: Upload your 128x128px icon
