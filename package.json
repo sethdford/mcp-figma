@@ -1,5 +1,5 @@
 {
-  "name": "mcp-figma",
+  "name": "@sethdouglasford/mcp-figma",
   "description": "AI-powered Figma MCP server for Cursor, GitHub Copilot, Windsurf and other AI assistants",
   "version": "1.0.0",
   "module": "dist/talk_to_figma_mcp/server.js",
@@ -52,7 +52,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/sethford/mcp-figma.git"
+    "url": "git+https://github.com/sethford/mcp-figma.git"
   },
   "author": "Seth Ford <seth@sethford.com>",
   "license": "MIT"

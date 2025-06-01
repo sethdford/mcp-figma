@@ -10,5 +10,5 @@ startCommand:
     |-
     (config) => ({
       command: 'npx',
-      args: ['mcp-figma']
+      args: ['@sethdouglasford/mcp-figma']
     })

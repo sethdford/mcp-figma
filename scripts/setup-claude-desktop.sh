@@ -40,7 +40,7 @@ echo "{
     \"TalkToFigma\": {
       \"command\": \"npx\",
       \"args\": [
-        \"mcp-figma@latest\"
+        \"@sethdouglasford/mcp-figma@latest\"
       ]
     }
   }

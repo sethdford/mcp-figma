@@ -20,7 +20,7 @@ echo '   {
      "mcpServers": {
        "TalkToFigma": {
          "command": "npx",
-         "args": ["mcp-figma@latest"]
+         "args": ["@sethdouglasford/mcp-figma@latest"]
        }
      }
    }'

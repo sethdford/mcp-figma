@@ -49,7 +49,7 @@ npm run socket
 
 3. **Start the MCP server:**
 ```bash
-npx mcp-figma
+npx @sethdouglasford/mcp-figma
 ```
 
 ## AI Assistant Configuration
@@ -71,7 +71,7 @@ GitHub Copilot has native MCP support across all major IDEs.
      "mcpServers": {
        "TalkToFigma": {
          "command": "npx",
-         "args": ["mcp-figma@latest"]
+         "args": ["@sethdouglasford/mcp-figma@latest"]
        }
      }
    }
@@ -86,7 +86,7 @@ Add to your VS Code `settings.json`:
     "servers": {
       "TalkToFigma": {
         "command": "npx",
-        "args": ["mcp-figma@latest"]
+        "args": ["@sethdouglasford/mcp-figma@latest"]
       }
     }
   }
@@ -104,7 +104,7 @@ Add to your VS Code `settings.json`:
      "servers": {
        "TalkToFigma": {
          "command": "npx",
-         "args": ["mcp-figma@latest"]
+         "args": ["@sethdouglasford/mcp-figma@latest"]
        }
      }
    }
@@ -136,7 +136,7 @@ Cursor has excellent MCP support with Agent mode.
      "mcpServers": {
        "TalkToFigma": {
          "command": "npx",
-         "args": ["mcp-figma@latest"]
+         "args": ["@sethdouglasford/mcp-figma@latest"]
        }
      }
    }
@@ -158,7 +158,7 @@ Windsurf has native MCP support with its Cascade agent.
      "servers": {
        "TalkToFigma": {
          "command": "npx",
-         "args": ["mcp-figma@latest"]
+         "args": ["@sethdouglasford/mcp-figma@latest"]
        }
      }
    }
@@ -177,7 +177,7 @@ Windsurf has native MCP support with its Cascade agent.
      "mcpServers": {
        "TalkToFigma": {
          "command": "npx",
-         "args": ["mcp-figma@latest"]
+         "args": ["@sethdouglasford/mcp-figma@latest"]
        }
      }
    }
@@ -247,7 +247,7 @@ Add the server to your Cursor MCP configuration in `~/.cursor/mcp.json`:
   "mcpServers": {
     "TalkToFigma": {
       "command": "npx",
-      "args": ["mcp-figma@latest"]
+      "args": ["@sethdouglasford/mcp-figma@latest"]
     }
   }
 }
@@ -282,7 +282,7 @@ For **GitHub Copilot coding agent**, you can configure MCP servers at the reposi
      "mcpServers": {
        "TalkToFigma": {
          "command": "npx",
-         "args": ["mcp-figma@latest"],
+         "args": ["@sethdouglasford/mcp-figma@latest"],
          "tools": ["*"]
        }
      }
@@ -307,7 +307,7 @@ export DEBUG=true
 
 1. **MCP Server not found**
    - Ensure Node.js is installed and `npx` is available
-   - Try running `npx mcp-figma` manually
+   - Try running `npx @sethdouglasford/mcp-figma` manually
 
 2. **WebSocket connection failed**
    - Check if the socket server is running: `npm run socket`

@@ -5,32 +5,32 @@
 We've updated the project naming scheme to be more consistent and professional:
 
 ### Old vs New Names:
-- **Project Name**: `cursor-talk-to-figma-mcp` → `mcp-figma`
-- **Package Name**: `ai-figma-mcp` → `mcp-figma`
+- **Project Name**: `cursor-talk-to-figma-mcp` → `@sethdouglasford/mcp-figma`
+- **Package Name**: `ai-figma-mcp` → `@sethdouglasford/mcp-figma`
 - **Plugin Name**: `AI Figma MCP Plugin` → `MCP Figma Plugin`
-- **Repository**: Should be `github.com/sethford/mcp-figma`
+- **Repository**: Should be `github.com/sethford/@sethdouglasford/mcp-figma`
 
 ## 🔄 Required GitHub Repository Changes
 
 ### 1. Repository Setup
 ```bash
 # If creating a new repository:
-gh repo create mcp-figma --public --description "MCP server for Figma integration with AI assistants"
+gh repo create @sethdouglasford/mcp-figma --public --description "MCP server for Figma integration with AI assistants"
 
 # If renaming existing repository:
 # Go to Settings → General → Repository name → Rename
 ```
 
 ### 2. Updated Package.json
-- ✅ Repository URL: `https://github.com/sethford/mcp-figma.git`
-- ✅ Package name: `mcp-figma`
-- ✅ Binary name: `mcp-figma`
+- ✅ Repository URL: `https://github.com/sethford/@sethdouglasford/mcp-figma.git`
+- ✅ Package name: `@sethdouglasford/mcp-figma`
+- ✅ Binary name: `@sethdouglasford/mcp-figma`
 - ✅ Author: `Seth Ford <seth@sethford.com>`
 
 ### 3. Installation Commands Updated
 All setup scripts now use:
 ```bash
-npx mcp-figma@latest
+npx @sethdouglasford/mcp-figma@latest
 ```
 
 ### 4. File Updates Made
@@ -55,7 +55,7 @@ npm publish
 ```
 
 ### GitHub Repository
-1. **Create/rename repository** to `mcp-figma`
+1. **Create/rename repository** to `@sethdouglasford/mcp-figma`
 2. **Update repository description**: "MCP server for Figma integration with AI assistants (Cursor, GitHub Copilot, Windsurf, Claude Desktop)"
 3. **Add topics**: `mcp`, `figma`, `ai`, `cursor`, `copilot`, `windsurf`, `claude`, `model-context-protocol`
 4. **Set up repository settings**:
@@ -76,10 +76,10 @@ Users will be able to install and use the package with:
 
 ```bash
 # Install globally
-npm install -g mcp-figma
+npm install -g @sethdouglasford/mcp-figma
 
 # Use with npx
-npx mcp-figma
+npx @sethdouglasford/mcp-figma
 
 # Setup scripts
 npm run setup:cursor
@@ -90,7 +90,7 @@ npm run setup:claude-desktop
 
 ## 📦 NPM Package Name
 
-The package `mcp-figma` is:
+The package `@sethdouglasford/mcp-figma` is:
 - ✅ Short and memorable
 - ✅ Clearly indicates MCP + Figma
 - ✅ Follows NPM naming conventions
