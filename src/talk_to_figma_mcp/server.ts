@@ -3010,21 +3010,6 @@ async function main() {
   try {
     // Try to connect to Figma socket server
     connectToFigma();
-    
-    // Auto-join channel if specified via environment variable
-    const autoJoinChannel = process.env.FIGMA_CHANNEL;
-    if (autoJoinChannel) {
-      logger.info(`Auto-joining channel: ${autoJoinChannel}`);
-      // Wait a moment for WebSocket connection to establish
-      setTimeout(async () => {
-        try {
-          await joinChannel(autoJoinChannel);
-          logger.info(`Successfully auto-joined channel: ${autoJoinChannel}`);
-        } catch (error) {
-          logger.error(`Failed to auto-join channel: ${error instanceof Error ? error.message : String(error)}`);
-        }
-      }, 3000);
-    }
   } catch (error) {
     logger.warn(`Could not connect to Figma initially: ${error instanceof Error ? error.message : String(error)}`);
     logger.warn('Will try to connect when the first command is sent');
