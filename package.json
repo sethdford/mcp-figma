@@ -1,7 +1,7 @@
 {
   "name": "@sethdouglasford/mcp-figma",
   "description": "AI-powered Figma MCP server for Cursor, GitHub Copilot, Windsurf and other AI assistants",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "module": "dist/talk_to_figma_mcp/server.js",
   "main": "dist/talk_to_figma_mcp/server.js",
   "bin": {
@@ -39,7 +39,7 @@
     "@types/uuid": "^9.0.7",
     "ts-node": "^10.9.1",
     "typescript": "^5.3.3",
-    "tsup": "^8.0.0"
+    "tsup": "^8.4.0"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "latest",

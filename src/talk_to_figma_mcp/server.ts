@@ -5,14 +5,6 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import WebSocket from "ws";
 import { v4 as uuidv4 } from "uuid";
-import { fork, ChildProcess } from "child_process"; // Added import
-import path from "path"; // Added import
-import fs from "fs"; // Added import
-import { fileURLToPath } from "url";
-
-// ES module equivalent of __dirname
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // Define TypeScript interfaces for Figma responses
 interface FigmaResponse {
@@ -68,11 +60,11 @@ interface setInstanceOverridesResult {
 
 // Custom logging functions that write to stderr instead of stdout to avoid being captured
 const logger = {
-  info: (message: string) => process.stderr.write(`[INFO] ${message}\\n`),
-  debug: (message: string) => process.stderr.write(`[DEBUG] ${message}\\n`),
-  warn: (message: string) => process.stderr.write(`[WARN] ${message}\\n`),
-  error: (message: string) => process.stderr.write(`[ERROR] ${message}\\n`),
-  log: (message: string) => process.stderr.write(`[LOG] ${message}\\n`)
+  info: (message: string) => process.stderr.write(`[INFO] ${message}\n`),
+  debug: (message: string) => process.stderr.write(`[DEBUG] ${message}\n`),
+  warn: (message: string) => process.stderr.write(`[WARN] ${message}\n`),
+  error: (message: string) => process.stderr.write(`[ERROR] ${message}\n`),
+  log: (message: string) => process.stderr.write(`[LOG] ${message}\n`)
 };
 
 // WebSocket connection and request tracking
@@ -86,7 +78,6 @@ const pendingRequests = new Map<string, {
 
 // Track which channel each client is in
 let currentChannel: string | null = null;
-let socketProcess: ChildProcess | null = null; // Added to keep track of the socket process
 
 // Create MCP server
 const server = new McpServer({
@@ -392,7 +383,7 @@ server.tool(
         content: [
           {
             type: "text",
-            text: `Created rectangle "${JSON.stringify(result)}"`
+            text: `Created rectangle "${JSON.stringify(result)}"`,
           },
         ],
       };
@@ -521,7 +512,7 @@ server.tool(
         content: [
           {
             type: "text",
-            text: `Created frame "${typedResult.name}" with ID: ${typedResult.id}. Use the ID as the parentId to appendChild inside this frame.`
+            text: `Created frame "${typedResult.name}" with ID: ${typedResult.id}. Use the ID as the parentId to appendChild inside this frame.`,
           },
         ],
       };
@@ -592,7 +583,7 @@ server.tool(
         content: [
           {
             type: "text",
-            text: `Created text "${typedResult.name}" with ID: ${typedResult.id}`
+            text: `Created text "${typedResult.name}" with ID: ${typedResult.id}`,
           },
         ],
       };
@@ -633,7 +624,7 @@ server.tool(
           {
             type: "text",
             text: `Set fill color of node "${typedResult.name
-              }" to RGBA(${r}, ${g}, ${b}, ${a || 1})`
+              }" to RGBA(${r}, ${g}, ${b}, ${a || 1})`,
           },
         ],
       };
@@ -676,7 +667,7 @@ server.tool(
           {
             type: "text",
             text: `Set stroke color of node "${typedResult.name
-              }" to RGBA(${r}, ${g}, ${b}, ${a || 1}) with weight ${weight || 1}`
+              }" to RGBA(${r}, ${g}, ${b}, ${a || 1}) with weight ${weight || 1}`,
           },
         ],
       };
@@ -711,7 +702,7 @@ server.tool(
         content: [
           {
             type: "text",
-            text: `Moved node "${typedResult.name}" to position (${x}, ${y})`
+            text: `Moved node "${typedResult.name}" to position (${x}, ${y})`,
           },
         ],
       };
@@ -784,7 +775,7 @@ server.tool(
         content: [
           {
             type: "text",
-            text: `Resized node "${typedResult.name}" to width ${width} and height ${height}`
+            text: `Resized node "${typedResult.name}" to width ${width} and height ${height}`,
           },
         ],
       };
@@ -816,7 +807,7 @@ server.tool(
         content: [
           {
             type: "text",
-            text: `Deleted node with ID: ${nodeId}`
+            text: `Deleted node with ID: ${nodeId}`,
           },
         ],
       };
@@ -929,7 +920,7 @@ server.tool(
         content: [
           {
             type: "text",
-            text: `Updated text content of node "${typedResult.name}" to "${text}"`
+            text: `Updated text content of node "${typedResult.name}" to "${text}"`,
           },
         ],
       };
@@ -1459,7 +1450,7 @@ Example Login Screen Structure:
     - Button Text (text)
   - Helper Links (frame)
     - Forgot Password (text)
-    - Don't have account (text)`
+    - Don't have account (text)`,
           },
         },
       ],
@@ -1483,7 +1474,7 @@ server.prompt(
 1. Start with selection:
    - First use read_my_design() to understand the current selection
    - If no selection ask user to select single or multiple nodes
-`
+`,
           },
         },
       ],
@@ -1776,7 +1767,7 @@ export_node_as_image(nodeId: "chunk-node-id", format: "PNG", scale: 0.5)
 - **Balance Automation & Control**: Let AI handle repetitive replacements but maintain oversight
 - **Respect Content Relationships**: Keep related content consistent across chunks
 
-Remember that text is never just text—it's a core design element that must work harmoniously with the overall composition. This chunk-based strategy allows you to methodically transform text while maintaining design integrity.`
+Remember that text is never just text—it's a core design element that must work harmoniously with the overall composition. This chunk-based strategy allows you to methodically transform text while maintaining design integrity.`,
           },
         },
       ],
@@ -2362,7 +2353,7 @@ server.tool(
           },
           {
             type: "text",
-            text: "IMPORTANT: You MUST now use the reaction data above and follow the \`reaction_to_connector_strategy\` prompt to prepare the parameters for the \`create_connections\` tool call. This is a required next step."
+            text: "IMPORTANT: You MUST now use the reaction data above and follow the `reaction_to_connector_strategy` prompt to prepare the parameters for the `create_connections` tool call. This is a required next step."
           }
         ],
         followUp: {
@@ -2522,8 +2513,8 @@ You will receive JSON data from the \`get_reactions\` tool. This data contains a
    - **For each extracted connection:** Create a concise, descriptive text label string.
    - **Combine Information:** Use the \`actionType\`, \`triggerType\`, and potentially the names of the source/destination nodes (obtained from Step 1's \`read_my_design\` or by calling \`get_node_info\` if necessary) to generate the label.
    - **Example Labels:**
-     - If \`triggerType\` is "ON_CLICK" and \`actionType\` is "NAVIGATE": "On click, navigate to [Destination Node Name]"
-     - If \`triggerType\` is "ON_DRAG" and \`actionType\` is "OPEN_OVERLAY": "On drag, open [Destination Node Name] overlay"
+     - If \`triggerType\` is "ON\_CLICK" and \`actionType\` is "NAVIGATE": "On click, navigate to [Destination Node Name]"
+     - If \`triggerType\` is "ON\_DRAG" and \`actionType\` is "OPEN\_OVERLAY": "On drag, open [Destination Node Name] overlay"
    - **Keep it brief and informative.** Let this generated string be \`generatedText\`.
 
 ### 4. Prepare the \`connections\` Array for \`create_connections\`
@@ -3016,100 +3007,23 @@ server.tool(
        
 // Start the server
 async function main() {
-  logger.info("MCP Figma Server starting...");
-
-  // Start the WebSocket server
-  await startWebSocketServer();
-
-  // Attempt to connect to Figma WebSocket server immediately
-  const figmaWebSocketPortEnv = process.env.FIGMA_WEBSOCKET_PORT;
-  const figmaWebSocketPort = figmaWebSocketPortEnv ? parseInt(figmaWebSocketPortEnv, 10) : 3055;
-
-  if (figmaWebSocketPortEnv) {
-    logger.info(`Using FIGMA_WEBSOCKET_PORT: ${figmaWebSocketPort}`);
-  } else {
-    logger.info(`FIGMA_WEBSOCKET_PORT not set, defaulting to ${figmaWebSocketPort}`);
-  }
-  
   try {
-    connectToFigma(figmaWebSocketPort);
+    // Try to connect to Figma socket server
+    connectToFigma();
   } catch (error) {
-    logger.warn(`Initial connection to WebSocket server failed: ${error instanceof Error ? error.message : String(error)}. Will retry on first command.`);
+    logger.warn(`Could not connect to Figma initially: ${error instanceof Error ? error.message : String(error)}`);
+    logger.warn('Will try to connect when the first command is sent');
   }
 
-
+  // Start the MCP server with stdio transport
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  logger.info("MCP Figma Server listening on stdio");
+  logger.info('FigmaMCP server running on stdio');
 }
 
-// Function to start the WebSocket server
-async function startWebSocketServer(): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const socketScriptPath = path.join(__dirname, "..", "socket.js"); // MODIFIED LINE for bundling
-    logger.info(`Looking for WebSocket server script at: ${socketScriptPath}`);
-
-    if (!fs.existsSync(socketScriptPath)) {
-      const errorMsg = `Socket script not found at ${socketScriptPath}. Ensure it is bundled with the extension (e.g., in 'bundled-mcp-server') or run 'npm run build' in the project.`; // MODIFIED LINE for bundling
-      logger.error(errorMsg);
-      // If running directly in dev, this might be okay if user runs socket server separately.
-      // For packaged version, this is a fatal error.
-      if (process.env.NODE_ENV === "production" || !process.argv.some(arg => arg.includes("ts-node-dev"))) {
-        process.exit(1); // Exit if not found in "production" or when not run by ts-node-dev
-      } else {
-        logger.warn("Socket script not found, but running in dev mode. Assuming WebSocket server is run separately.");
-        resolve(); // Resolve in dev mode assuming manual start
-        return;
-      }
-    }
-
-    logger.info(`Starting WebSocket server from: ${socketScriptPath}`);
-    socketProcess = fork(socketScriptPath, [], { stdio: "pipe" });
-
-    socketProcess.stdout?.on("data", (data) => {
-      const message = data.toString().trim();
-      logger.info(`[SocketServer]: ${message}`);
-      // Resolve the promise once we get a confirmation message or after a timeout
-      if (message.includes("WebSocket server started")) { // Check for the specific startup message
-        resolve();
-      }
-    });
-
-    socketProcess.stderr?.on("data", (data) => {
-      logger.error(`[SocketServerError]: ${data.toString().trim()}`);
-    });
-
-    socketProcess.on("error", (err) => {
-      logger.error(`Failed to start WebSocket server process: ${err.message}`);
-      reject(err); // Reject the promise on fork error
-    });
-
-    socketProcess.on("exit", (code) => {
-      logger.info(`WebSocket server process exited with code ${code}`);
-      socketProcess = null; // Clear the reference
-      if (code !== 0 && code !== null) {
-        // Optionally, reject or handle non-zero exit codes if not already resolved
-        // For now, we just log it. The main server will fail to connect.
-        // This path should ideally be handled if the promise hasn't resolved yet.
-      }
-    });
-    
-    // Failsafe resolve after a timeout if no confirmation is received
-    // This allows the MCP server to continue and try connecting.
-    // The connectToFigma function has its own retry logic.
-    setTimeout(() => {
-        logger.warn("No confirmation from WebSocket server after 3 seconds, proceeding with connection attempt regardless.");
-        resolve(); // Resolve anyway to allow MCP server to attempt connection
-    }, 3000);
-  });
-}
-
-main().catch((error) => {
-  logger.error(`Unhandled error in main: ${error instanceof Error ? error.message : String(error)}`);
-  if (socketProcess) {
-    logger.info("Attempting to kill WebSocket server process before exiting...");
-    socketProcess.kill();
-  }
+// Run the server
+main().catch(error => {
+  logger.error(`Error starting FigmaMCP server: ${error instanceof Error ? error.message : String(error)}`);
   process.exit(1);
 });
 
